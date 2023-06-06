@@ -1,0 +1,14 @@
+# Python virtual environment
+venv/*
+
+# Pycharm project
+.idea/*
+
+# Pycache
+__pycache__/*
+
+# Dotenv
+.env
+
+# Database
+instance/*

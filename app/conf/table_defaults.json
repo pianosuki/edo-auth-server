@@ -1,0 +1,26 @@
+{
+  "users": [
+    {
+      "email": null,
+      "password": null,
+      "roles": [
+        "Admin"
+      ]
+    }
+  ],
+  "roles" : [
+    {
+      "name": "User",
+      "description": "A user with default privileges"
+    },
+    {
+      "name": "Admin",
+      "description": "A user with administrator privileges"
+    }
+  ],
+  "api_keys": [
+    {
+      "user_id": 1
+    }
+  ]
+}

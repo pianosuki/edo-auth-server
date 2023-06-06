@@ -1,0 +1,6 @@
+{
+    "swagger_ui": true,
+    "swagger_ui_config": {
+            "displayOperationId": true
+        }
+}

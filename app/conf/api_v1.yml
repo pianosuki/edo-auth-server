@@ -1,0 +1,325 @@
+openapi: 3.0.0
+info:
+    title: "RP Flask REST API"
+    description: "An API for users"
+    version: "1.0.0"
+
+servers:
+    - url: "/api/v1"
+
+components:
+    securitySchemes:
+        ApiKeyAuth:
+            type: apiKey
+            in: header
+            name: X-API-KEY
+            x-apikeyInfoFunc: app.auth.api_key_info
+    schemas:
+        User:
+            type: object
+            properties:
+                email:
+                    type: string
+                password:
+                    type: string
+                is_restricted:
+                    type: boolean
+                is_silenced:
+                    type: boolean
+                roles:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/Role"
+        Role:
+            type: object
+            properties:
+                name:
+                    type: string
+                description:
+                    type: string
+        Credentials:
+            type: object
+            properties:
+                email:
+                    type: string
+                password:
+                    type: string
+    parameters:
+        user_id:
+            name: "user_id"
+            description: "ID of the user"
+            in: path
+            required: True
+            schema:
+                type: integer
+        role_id:
+            name: "role_id"
+            description: "ID of the role"
+            in: path
+            required: True
+            schema:
+                type: integer
+        access_token:
+            name: "access_token"
+            description: "Access token obtained from authentication"
+            in: query
+            required: True
+            schema:
+                type: string
+        refresh_token:
+            name: "refresh_token"
+            description: "Refresh token obtained from authentication"
+            in: query
+            required: True
+            schema:
+                type: string
+    responses:
+        UnauthorizedError:
+            description: X-API-KEY is missing in the header or invalid
+            headers:
+                WWW-Authenticate:
+                    schema:
+                        type: string
+
+paths:
+    /users:
+        get:
+            summary: "Fetch all users"
+            tags:
+                - Users
+            security:
+                - ApiKeyAuth: []
+            responses:
+                "200":
+                    description: "Successfully retrieved all users"
+                "401":
+                    $ref: "#/components/responses/UnauthorizedError"
+        post:
+            summary: "Create a user"
+            tags:
+                - Users
+            security:
+                - ApiKeyAuth: []
+            requestBody:
+                description: "User to create"
+                required: True
+                content:
+                    application/json:
+                        schema:
+                            x-body-name: "user_obj"
+                            $ref: "#/components/schemas/User"
+            responses:
+                "201":
+                    description: "Successfully created user"
+                "400":
+                    description: Required property(s) missing or invalid
+                "401":
+                    $ref: "#/components/responses/UnauthorizedError"
+                "409":
+                    description: Provided property(s) conflicts with existing user
+    /users/{user_id}:
+        get:
+            summary: "Fetch a single user"
+            tags:
+                - Users
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - $ref: "#/components/parameters/user_id"
+            responses:
+                "200":
+                    description: "Successfully retrieved the user"
+                "401":
+                    $ref: "#/components/responses/UnauthorizedError"
+                "404":
+                    description: "Requested user does not exist"
+        put:
+            summary: "Update a user"
+            tags:
+                - Users
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - $ref: "#/components/parameters/user_id"
+            requestBody:
+                description: "User properties to update"
+                content:
+                    application/json:
+                        schema:
+                            x-body-name: "user_obj"
+                            $ref: "#/components/schemas/User"
+            responses:
+                "200":
+                    description: "Successfully updated the user"
+                "400":
+                    description: Required property(s) missing or invalid
+                "401":
+                    $ref: "#/components/responses/UnauthorizedError"
+                "404":
+                    description: "Requested user does not exist"
+                "409":
+                    description: Provided property(s) conflicts with existing user
+        delete:
+            summary: "Delete a user"
+            tags:
+                - Users
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - $ref: "#/components/parameters/user_id"
+            responses:
+                "204":
+                    description: "Successfully deleted the user"
+                "401":
+                    $ref: "#/components/responses/UnauthorizedError"
+                "404":
+                    description: "Requested user does not exist"
+    /roles:
+        get:
+            summary: "Fetch all roles"
+            tags:
+                - Roles
+            security:
+                - ApiKeyAuth: []
+            responses:
+                "200":
+                    description: "Successfully retrieved all roles"
+                "401":
+                    $ref: "#/components/responses/UnauthorizedError"
+        post:
+            summary: "Create a role"
+            tags:
+                - Roles
+            security:
+                - ApiKeyAuth: []
+            requestBody:
+                description: "Role to create"
+                required: True
+                content:
+                    application/json:
+                        schema:
+                            x-body-name: "role_obj"
+                            $ref: "#/components/schemas/Role"
+            responses:
+                "201":
+                    description: "Successfully created role"
+                "400":
+                    description: Required property(s) missing or invalid
+                "401":
+                    $ref: "#/components/responses/UnauthorizedError"
+                "409":
+                    description: Provided property(s) conflicts with existing role
+    /roles/{role_id}:
+        get:
+            summary: "Fetch a single role"
+            tags:
+                - Roles
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - $ref: "#/components/parameters/role_id"
+            responses:
+                "200":
+                    description: "Successfully retrieved the role"
+                "401":
+                    $ref: "#/components/responses/UnauthorizedError"
+                "404":
+                    description: "Requested role does not exist"
+        put:
+            summary: "Update a role"
+            tags:
+                - Roles
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - $ref: "#/components/parameters/role_id"
+            requestBody:
+                description: "Role properties to update"
+                content:
+                    application/json:
+                        schema:
+                            x-body-name: "role_obj"
+                            $ref: "#/components/schemas/Role"
+            responses:
+                "200":
+                    description: "Successfully updated the role"
+                "401":
+                    $ref: "#/components/responses/UnauthorizedError"
+                "404":
+                    description: "Requested role does not exist"
+                "409":
+                    description: Provided property(s) conflicts with existing role
+        delete:
+            summary: "Delete a role"
+            tags:
+                - Roles
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - $ref: "#/components/parameters/role_id"
+            responses:
+                "204":
+                    description: "Successfully deleted the role"
+                "401":
+                    $ref: "#/components/responses/UnauthorizedError"
+                "404":
+                    description: "Requested role does not exist"
+    /authenticate:
+        get:
+            summary: "Verify the validity of an access token"
+            tags:
+                - Authentication
+            parameters:
+                - $ref: "#/components/parameters/access_token"
+            responses:
+                "200":
+                    description: "Successfully verified access token"
+                "400":
+                    description: Required parameter missing from query
+                "401":
+                    description: "Invalid access token"
+        post:
+            summary: "Authenticate credentials to receive an access token and refresh token"
+            tags:
+                - Authentication
+            requestBody:
+                description: "Credentials to authenticate"
+                required: True
+                content:
+                    application/json:
+                        schema:
+                            x-body-name: "credentials_obj"
+                            $ref: "#/components/schemas/Credentials"
+            responses:
+                "201":
+                    description: "Successfully authenticated credentials"
+                "400":
+                    description: Required property(s) missing or invalid
+                "401":
+                    description: "Invalid credentials"
+        put:
+            summary: "Refresh an access token using a refresh token"
+            tags:
+                - Authentication
+            parameters:
+                - $ref: "#/components/parameters/refresh_token"
+            responses:
+                "200":
+                    description: "Successfully refreshed access token"
+                "400":
+                    description: Required parameter missing from query
+                "401":
+                    description: "Invalid refresh token"
+        delete:
+            summary: "Revoke a refresh token and its corresponding access token"
+            tags:
+                - Authentication
+            parameters:
+                - $ref: "#/components/parameters/refresh_token"
+            responses:
+                "204":
+                    description: "Successfully revoked refresh and access tokens"
+                "400":
+                    description: Required parameter missing from query
+                "401":
+                    description: "Invalid refresh token"
